@@ -16,21 +16,14 @@ siniestros-fatales-peru-ml/
 ├── data/
 │   ├── raw/              # Dataset original descargado del ONSV (.xlsx)
 │   ├── procesada/        # Datasets generados por los notebooks
-│   │   ├── siniestros_limpio.csv
-│   │   ├── siniestros_enriquecido.csv
-│   │   └── trazabilidad_variables_externas.csv
 │   └── externas/         # Fuentes externas MTC, IDH, SENAMHI (no versionadas)
-│       ├── 1_Red_vial_nacional_2022-2025.csv
-│       ├── 1_Diccionario_Datos_Red_vial_nacional_2022-2025.xlsx
-│       ├── IDH-y-Componentes-2003-2019.xlsx
-│       └── 344790-red-vial-existente-...segun-departamento-2010-jun-2025.xlsx
 │
 ├── notebooks/
 │   ├── 01_EDA_limpieza.ipynb
 │   ├── 02_enriquecimiento_externo.ipynb
 │   ├── 03_preparacion_modelado.ipynb
-│   ├── 04_modelado_supervisado.ipynb      # pendiente
-│   └── 05_hotspots_dbscan.ipynb           # pendiente
+│   ├── 04_modelado_supervisado.ipynb       
+│   └── 05_hotspots_dbscan.ipynb            
 │
 ├── outputs/
 │   └── figures/          # Gráficos generados por los notebooks
@@ -47,11 +40,11 @@ El flujo se organizó en cinco fases derivadas de Han, Kamber y Pei (2012), que 
 
 | Notebook | Fase | Estado | Referencia |
 |---|---|---|---|
-| 01 — EDA y Limpieza | Exploración + *data cleaning* | ✅ Completo | Han et al. (2012) |
-| 02 — Enriquecimiento externo | Integración de fuentes externas (MTC, IDH/PNUD, SINAC) | ✅ Completo | Provost & Fawcett (2013) |
-| 03 — Preparación para modelado | *Data transformation* + selección de features + SMOTE | ✅ Completo | Géron (2022) |
-| 04 — Modelado supervisado | Random Forest + XGBoost + SHAP | 🔲 Pendiente | Breiman (2001); Chen et al. (2025) |
-| 05 — Hotspots DBSCAN | Clustering espacial de zonas de riesgo | 🔲 Pendiente | Kamh et al. (s.f.) |
+| 01 — EDA y Limpieza | Exploración + *data cleaning* |  Completo | Han et al. (2012) |
+| 02 — Enriquecimiento externo | Integración de fuentes externas (MTC, IDH/PNUD, SINAC) |  Completo | Provost & Fawcett (2013) |
+| 03 — Preparación para modelado | *Data transformation* + selección de features + SMOTE |  Completo | Géron (2022) |
+| 04 — Modelado supervisado | Random Forest + XGBoost + SHAP |  Pendiente | Breiman (2001); Chen et al. (2025) |
+| 05 — Hotspots DBSCAN | Clustering espacial de zonas de riesgo |  Pendiente | Kamh et al. (s.f.) |
 
 ---
 
@@ -68,10 +61,6 @@ El archivo raw no se sube al repositorio por su tamaño. Descargarlo directament
 ---
 
 ## Requisitos
-
-```bash
-pip install -r requirements.txt
-```
 
 Dependencias principales: `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `imbalanced-learn`, `openpyxl`.
 
