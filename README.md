@@ -43,7 +43,7 @@ El flujo se organizó en cinco fases derivadas de Han, Kamber y Pei (2012), que 
 | 01 — EDA y Limpieza | Exploración + *data cleaning* |  Completo | Han et al. (2012) |
 | 02 — Enriquecimiento externo | Integración de fuentes externas (MTC, IDH/PNUD, SINAC) |  Completo | Provost & Fawcett (2013) |
 | 03 — Preparación para modelado | *Data transformation* + selección de features + SMOTE |  Completo | Géron (2022) |
-| 04 — Modelado supervisado | Random Forest + XGBoost + SHAP |  Pendiente | Breiman (2001); Chen et al. (2025) |
+| 04 — Modelado supervisado | Random Forest + XGBoost + SHAP |  Completo | Breiman (2001); Chen et al. (2025) |
 | 05 — Hotspots DBSCAN | Clustering espacial de zonas de riesgo |  Pendiente | Kamh et al. (s.f.) |
 
 ---
@@ -62,7 +62,7 @@ El archivo raw no se sube al repositorio por su tamaño. Descargarlo directament
 
 ## Requisitos
 
-Dependencias principales: `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `imbalanced-learn`, `openpyxl`.
+Dependencias principales: `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`, `imbalanced-learn`, `openpyxl`, `xgboost`, `shap`.
 
 ---
 
