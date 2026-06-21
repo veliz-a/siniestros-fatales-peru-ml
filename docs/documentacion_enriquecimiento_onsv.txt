@@ -1,0 +1,186 @@
+﻿DOCUMENTACION INTERNA - ENRIQUECIMIENTO ONSV CON PERSONAS Y VEHICULOS
+Proyecto: siniestros-fatales-peru-ml
+Responsable del punto: Romina
+Fecha de elaboracion: 21/06/2026
+
+1. Objetivo del trabajo realizado
+
+El objetivo de este avance fue enriquecer la base de siniestros fatales de transito del Peru con informacion relacional adicional proveniente de la propia ONSV. La base principal ya contenia los registros de siniestros y tambien habia sido enriquecida previamente con variables externas como IDH, red vial e infraestructura. Sin embargo, se identificaron dos nuevas bases oficiales que podian aportar informacion complementaria por cada siniestro:
+
+- Personas involucradas en siniestros fatales 2021-2025.
+- Vehiculos involucrados en siniestros fatales 2021-2025.
+
+Estas bases permiten agregar contexto sobre cuantos participantes y vehiculos estuvieron involucrados, caracteristicas de conductores, presencia de peatones o pasajeros, problemas de licencia, dosaje, SOAT, CITV y tipo de vehiculo. La idea fue sumar informacion util para el modelado sin alterar la cantidad de siniestros originales.
+
+2. Archivos utilizados como entrada
+
+Los archivos originales se ubicaron dentro del repositorio en la carpeta data/raw, porque corresponden a datos fuente sin modificar.
+
+Archivos base:
+
+- data/raw/BBDD ONSV - SINIESTROS FATALES 2021-2025 (preliminar).xlsx
+  Base oficial original de siniestros fatales. Contiene el identificador CÓDIGO SINIESTRO.
+
+- data/procesada/siniestros_enriquecido.csv
+  Base enriquecida previa del proyecto. Tenia 9,106 registros y 56 columnas antes de agregar las nuevas variables relacionales.
+
+Nuevos archivos agregados:
+
+- data/raw/BBDD ONSV - PERSONAS 2021-2025 (preliminar) (1).xlsx
+  Base oficial de personas involucradas. Tiene varias filas por siniestro, porque un mismo siniestro puede involucrar a mas de una persona.
+
+- data/raw/BBDD ONSV - VEHICULOS 2021-2025 (preliminar) (1).xlsx
+  Base oficial de vehiculos involucrados. Tiene varias filas por siniestro, porque un mismo siniestro puede involucrar a mas de un vehiculo.
+
+3. Por que no se hizo un cruce directo fila por fila
+
+Las bases de personas y vehiculos no tienen una relacion de 1 a 1 con la base de siniestros. Un siniestro puede tener muchas personas y varios vehiculos asociados. Por eso, si se hacia un merge directo, se duplicarian filas de siniestros y se dañaria la estructura del dataset para modelado.
+
+La solucion fue convertir ambas bases relacionales a una tabla agregada por CÓDIGO SINIESTRO. Es decir, se genero una sola fila por siniestro con variables resumen, y recien despues se hizo el cruce con la base enriquecida.
+
+4. Script generado
+
+Se creo el siguiente script reproducible:
+
+- scripts/enriquecer_onsv_personas_vehiculos.py
+
+Este script automatiza todo el proceso de enriquecimiento con las bases de personas y vehiculos. No modifica los archivos originales ni reemplaza la base enriquecida anterior; genera una nueva version para revision.
+
+Para ejecutarlo desde la raiz del repositorio:
+
+python scripts/enriquecer_onsv_personas_vehiculos.py
+
+Ruta del repositorio en la computadora:
+
+C:\Users\romin\OneDrive\Documentos\GitHub\siniestros-fatales-peru-ml
+
+5. Logica principal del script
+
+El script realiza los siguientes pasos:
+
+1. Lee la base original de siniestros desde data/raw para recuperar el campo CÓDIGO SINIESTRO.
+2. Lee la base enriquecida previa desde data/procesada/siniestros_enriquecido.csv.
+3. Inserta el identificador CODIGO_SINIESTRO en la base enriquecida previa, validando que el orden y la cantidad de registros coincidan con la base original.
+4. Lee la base de personas involucradas.
+5. Agrupa la base de personas por CODIGO_SINIESTRO y genera variables resumen.
+6. Lee la base de vehiculos involucrados.
+7. Agrupa la base de vehiculos por CODIGO_SINIESTRO y genera variables resumen.
+8. Cruza las variables agregadas con la base enriquecida previa.
+9. Valida que no se altere el numero de filas ni la variable objetivo.
+10. Exporta una nueva base enriquecida y una tabla de trazabilidad.
+
+6. Variables agregadas desde PERSONAS
+
+Se agregaron 12 variables relacionadas con las personas involucradas:
+
+- PER_TOTAL_PERSONAS: cantidad total de personas asociadas al siniestro.
+- PER_N_CONDUCTORES: cantidad de conductores identificados.
+- PER_N_CONDUCTORES_FUGADOS: cantidad de conductores fugados.
+- PER_N_PEATONES: cantidad de peatones involucrados.
+- PER_N_PASAJEROS_OCUPANTES: cantidad de pasajeros u ocupantes.
+- PER_EDAD_COND_PROM: edad promedio de conductores.
+- PER_EDAD_COND_MIN: edad minima de conductores.
+- PER_EDAD_COND_MAX: edad maxima de conductores.
+- PER_ANY_COND_MASCULINO: indica si hubo al menos un conductor masculino.
+- PER_ANY_LIC_PROBLEMA: indica si existio algun problema con licencia de conducir.
+- PER_ANY_DOSAJE_POS: indica si algun dosaje registrado fue positivo.
+- PER_ANY_DOSAJE_EVALUADO: indica si hubo evaluacion de dosaje registrada.
+
+7. Variables agregadas desde VEHICULOS
+
+Se agregaron 12 variables relacionadas con los vehiculos involucrados:
+
+- VEH_TOTAL: cantidad total de vehiculos asociados al siniestro.
+- VEH_N_FUGADOS: cantidad de vehiculos fugados.
+- VEH_ANY_FUGADO: indica si hubo al menos un vehiculo fugado.
+- VEH_ANY_CARGA: indica si participo algun vehiculo de carga.
+- VEH_ANY_PUBLICO: indica si participo algun vehiculo de transporte publico.
+- VEH_ANY_PARTICULAR: indica si participo algun vehiculo particular.
+- VEH_ANY_MOTO: indica si participo motocicleta o vehiculo menor similar.
+- VEH_ANY_AUTO: indica si participo automovil.
+- VEH_ANY_CAMION_BUS: indica si participo camion, bus u otro vehiculo pesado.
+- VEH_ANY_SOAT_PROBLEMA: indica si hubo problema con SOAT.
+- VEH_ANY_CITV_PROBLEMA: indica si hubo problema con revision tecnica vehicular.
+- VEH_ANY_SEGURO_PROBLEMA: indica si hubo problema de seguro vehicular.
+
+En total se agregaron 24 variables nuevas.
+
+8. Variables excluidas para evitar fuga de informacion
+
+Se tuvo cuidado de no usar variables que revelen directamente el resultado del siniestro o que esten demasiado vinculadas a la severidad final. Esto es importante porque el modelo debe aprender patrones previos o contextuales, no recibir la respuesta indirectamente.
+
+Por ese motivo, no se utilizaron como predictoras variables como:
+
+- GRAVEDAD de la persona.
+- LUGAR ATENCIÓN LESIONADO.
+- LUGAR DE DEFUNCIÓN.
+- Conteos directos de fallecidos o lesionados derivados de la base de personas.
+
+Estas variables pueden servir para analisis descriptivo, pero no son adecuadas para enriquecer el dataset de entrenamiento si el objetivo es predecir severidad.
+
+9. Archivos generados como salida
+
+El proceso genero dos archivos nuevos en data/procesada:
+
+- data/procesada/siniestros_enriquecido_onsv.csv
+  Base final enriquecida con variables externas previas y con variables agregadas de personas y vehiculos.
+
+- data/procesada/trazabilidad_variables_onsv_relacional.csv
+  Tabla de trazabilidad donde se documenta de que fuente proviene cada nueva variable, que representa y como fue construida.
+
+10. Resultado final del enriquecimiento
+
+Antes del enriquecimiento relacional:
+
+- Base: siniestros_enriquecido.csv
+- Filas: 9,106
+- Columnas: 56
+
+Despues del enriquecimiento relacional:
+
+- Base: siniestros_enriquecido_onsv.csv
+- Filas: 9,106
+- Columnas: 81
+- Nuevas variables agregadas: 24
+- Cobertura de PERSONAS: 100% de los siniestros
+- Cobertura de VEHICULOS: 100% de los siniestros
+- Duplicados generados: 0
+- Variable objetivo CATEGORIA_SEVERIDAD: sin cambios
+
+La diferencia de columnas considera que tambien se incorporo el identificador CODIGO_SINIESTRO para mantener trazabilidad del cruce.
+
+11. Validaciones realizadas
+
+El script incluye validaciones para asegurar que el cruce sea correcto:
+
+- Se valido que la base resultante mantenga exactamente 9,106 filas.
+- Se valido que no se dupliquen siniestros despues del merge.
+- Se valido que la distribucion de la variable objetivo CATEGORIA_SEVERIDAD no cambie.
+- Se valido que todos los siniestros tengan cruce con las bases de personas y vehiculos.
+- Se genero una tabla de trazabilidad para explicar cada variable nueva.
+
+12. Interpretacion sencilla del aporte
+
+En palabras simples, este enriquecimiento agrega informacion sobre quienes participaron y que vehiculos estuvieron involucrados en cada siniestro. No se agregaron nuevos siniestros; se mantuvieron los mismos 9,106 casos, pero ahora cada fila tiene mas contexto para que el modelo pueda aprender mejores patrones.
+
+Por ejemplo, antes la base podia indicar donde, cuando y bajo que condiciones ocurrio el siniestro. Ahora tambien puede incluir si hubo peatones, cuantos conductores participaron, si hubo problemas de licencia, si participaron motos, vehiculos pesados, transporte publico, problemas de SOAT o problemas de CITV.
+
+13. Archivos que se deben subir a GitHub
+
+Los archivos nuevos o modificados que corresponden a este avance son:
+
+- data/raw/BBDD ONSV - PERSONAS 2021-2025 (preliminar) (1).xlsx
+- data/raw/BBDD ONSV - VEHICULOS 2021-2025 (preliminar) (1).xlsx
+- scripts/enriquecer_onsv_personas_vehiculos.py
+- data/procesada/siniestros_enriquecido_onsv.csv
+- data/procesada/trazabilidad_variables_onsv_relacional.csv
+- docs/documentacion_enriquecimiento_onsv.txt
+
+14. Recomendacion para el siguiente paso
+
+La base final recomendada para continuar el modelado, previa revision del grupo, es:
+
+- data/procesada/siniestros_enriquecido_onsv.csv
+
+Si el grupo decide usar esta version como base principal, el notebook 03 de preparacion para modelado deberia leer este archivo en lugar de la version anterior. Luego se tendria que volver a ejecutar la preparacion, el balanceo y el modelado para comparar si las nuevas variables mejoran el desempeño del modelo.
+
