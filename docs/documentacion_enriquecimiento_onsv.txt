@@ -1,77 +1,41 @@
-﻿DOCUMENTACION INTERNA - ENRIQUECIMIENTO DE DATOS ONSV Y FUENTES EXTERNAS
+﻿DOCUMENTACION INTERNA - NOTEBOOK 02: ENRIQUECIMIENTO EXTERNO Y RELACIONAL
 Proyecto: siniestros-fatales-peru-ml
 Responsable del punto: Romina
 Fecha de actualización: 22/06/2026
 
-1. Objetivo del trabajo realizado
+1. Objetivo del notebook 02
 
-El objetivo del punto de enriquecimiento fue ampliar la base limpia de siniestros fatales de tránsito del Perú con información real y trazable. El proceso se integró dentro del notebook 02, para que el pipeline quede ordenado así:
+El objetivo del notebook 02 es enriquecer la base limpia generada por el notebook 01 con fuentes oficiales externas y relacionales.
 
-- Notebook 01: limpieza y EDA inicial.
-- Notebook 02: enriquecimiento externo y relacional.
-- Notebook 03: preparación para modelado.
+El notebook 02 no realiza feature engineering de modelado ni crea la variable objetivo. Es decir, no genera columnas como AÑO, MES, FRANJA_HORARIA, REGION_NATURAL, CATEGORIA_SEVERIDAD, MORTALIDAD_MULTIPLE o LESION_MULTIPLE. Esas variables corresponden al notebook 03.
 
-El notebook principal de este punto es:
+2. Entrada del notebook 02
 
-- notebooks/02_enriquecimiento_externo.ipynb
-
-2. Archivos usados como entrada
-
-Base limpia:
+Archivo de entrada:
 
 - data/procesada/siniestros_limpio.csv
 
-Fuentes externas:
+Este archivo viene del notebook 01 y representa la limpieza estricta del archivo original. Contiene:
 
-- data/externas/1_Red_vial_nacional_2022-2025.csv
-- data/externas/IDH-y-Componentes-2003-2019.xlsx
-- data/externas/344790-red-vial-existente-del-sistema-nacional-de-carreteras-segun-departamento-2010-jun-2025.xlsx
+- 9,106 filas
+- 27 columnas limpias originales
+- CÓDIGO SINIESTRO como identificador del siniestro
 
-Fuentes relacionales ONSV:
+El notebook 02 usa ese identificador como llave primaria para validar cruces, especialmente con las bases de PERSONAS y VEHÍCULOS de ONSV.
 
-- data/raw/BBDD ONSV - PERSONAS 2021-2025 (preliminar) (1).xlsx
-- data/raw/BBDD ONSV - VEHICULOS 2021-2025 (preliminar) (1).xlsx
+3. Validación inicial de columnas
 
-3. Qué se agregó en el notebook 02
+El notebook 02 valida las columnas del dataset limpio mediante alias normalizados. Esto evita depender de nombres exactos con tildes, espacios o variaciones menores.
 
-Se corrigió y amplió el notebook 02 para que realice todo el enriquecimiento en un solo flujo reproducible. Ya no depende de hacer el enriquecimiento principal mediante un script separado.
+Ejemplo:
 
-El notebook ahora incluye:
+- CÓDIGO SINIESTRO se estandariza internamente como CODIGO_SINIESTRO.
 
-- Lectura segura del CSV limpio con prioridad en utf-8-sig.
-- Corrección/verificación de encoding en outputs.
-- Reconstrucción de variables derivadas si el limpio nuevo no las trae.
-- Validación robusta de columnas del dataset limpio mediante alias normalizados, y validación de CODIGO_SINIESTRO como llave única.
-- Enriquecimiento con fuentes MTC e IDH.
-- Enriquecimiento con personas y vehículos ONSV.
-- Validación de merges.
-- Reporte de porcentaje de nulos en variables nuevas.
-- Exportación de la base final y trazabilidad en utf-8-sig.
+Esta estandarización se usa solo para que los merges sean consistentes. No representa una etapa de feature engineering.
 
-4. Variables reconstruidas para mantener compatibilidad con el notebook 03
+4. Fuentes externas agregadas
 
-Como el csv limpio nuevo trae la información base, pero no todas las variables derivadas que necesita el modelado, el notebook 02 reconstruye cuando sea necesario:
-
-- AÑO
-- MES
-- DIA_SEMANA
-- ES_FIN_SEMANA
-- HORA_NUM
-- FRANJA_HORARIA
-- REGION_NATURAL
-- CATEGORIA_SEVERIDAD
-- MORTALIDAD_MULTIPLE
-- LESION_MULTIPLE
-
-La variable objetivo CATEGORIA_SEVERIDAD se reconstruye con la misma lógica del proyecto:
-
-- GRAVE_MORTALIDAD: cuando hay 2 o más fallecidos.
-- GRAVE_LESIONADOS: cuando hay 3 o más lesionados y no aplica mortalidad múltiple.
-- LEVE: los demás casos.
-
-5. Enriquecimiento con fuentes externas
-
-Se integraron tres fuentes externas reales:
+Se integran tres fuentes externas:
 
 A. MTC Red Vial Nacional 2022-2025
 
@@ -79,7 +43,7 @@ Cruce:
 
 - COD CARRETERA -> CODIGO_RUTA
 
-Variables añadidas:
+Variables agregadas:
 
 - MTC_RVN_LONGITUD_KM
 - MTC_RVN_N_CARRILES_MEDIANA
@@ -94,15 +58,13 @@ Cobertura:
 
 - 55.04%
 
-La cobertura parcial es esperada porque no todos los siniestros ocurren en rutas nacionales del SINAC. Hay registros en vías urbanas, sin clasificación o con NO CORRESPONDE.
-
 B. IDH PNUD/IPE 2019
 
 Cruce:
 
 - DEPARTAMENTO + PROVINCIA + DISTRITO
 
-Variables añadidas:
+Variables agregadas:
 
 - IDH_UBIGEO
 - IDH_2019
@@ -122,7 +84,7 @@ Cruce:
 
 - DEPARTAMENTO
 
-Variables añadidas:
+Variables agregadas:
 
 - MTC_DEP_RED_TOTAL_KM
 - MTC_DEP_NACIONAL_TOTAL_KM
@@ -136,16 +98,16 @@ Cobertura:
 
 - 100.00%
 
-6. Enriquecimiento relacional con personas y vehículos ONSV
+5. Fuentes relacionales ONSV agregadas
 
-Se agregaron dos bases oficiales adicionales de ONSV:
+También se integran dos bases oficiales relacionales de ONSV:
 
-- Personas involucradas.
-- Vehículos involucrados.
+- data/raw/BBDD ONSV - PERSONAS 2021-2025 (preliminar) (1).xlsx
+- data/raw/BBDD ONSV - VEHICULOS 2021-2025 (preliminar) (1).xlsx
 
-Estas bases no se cruzan directamente fila por fila, porque un siniestro puede tener varias personas y varios vehículos. Por eso primero se agregan por CODIGO_SINIESTRO, generando una sola fila resumen por siniestro.
+Estas bases no se cruzan directamente fila por fila porque un siniestro puede tener varias personas y varios vehículos. Por eso se agrupan primero por CODIGO_SINIESTRO y luego se cruzan con la base limpia.
 
-Variables añadidas desde PERSONAS:
+Variables agregadas desde PERSONAS:
 
 - PER_TOTAL_PERSONAS
 - PER_N_CONDUCTORES
@@ -164,7 +126,7 @@ Cobertura:
 
 - 100.00%
 
-Variables añadidas desde VEHÍCULOS:
+Variables agregadas desde VEHÍCULOS:
 
 - VEH_TOTAL
 - VEH_N_FUGADOS
@@ -183,89 +145,60 @@ Cobertura:
 
 - 100.00%
 
-7. Prevención de fuga de información
+6. Prevención de fuga de información
 
-Para no contaminar el modelado, se evitó usar variables que revelen directamente la severidad o el desenlace del siniestro.
+Para evitar fuga de información, no se usan variables que revelen directamente el desenlace del siniestro, como:
 
-No se usaron como predictoras:
+- GRAVEDAD de la persona
+- LUGAR ATENCIÓN LESIONADO
+- LUGAR DE DEFUNCIÓN
+- Conteos directos de fallecidos o lesionados desde la base de personas
 
-- GRAVEDAD de la persona.
-- LUGAR ATENCIÓN LESIONADO.
-- LUGAR DE DEFUNCIÓN.
-- Conteos directos de fallecidos o lesionados desde la base de personas.
+El target y las columnas derivadas de modelado quedan para el notebook 03.
 
-Esto es importante porque el modelo debe aprender patrones asociados al riesgo, no recibir la respuesta indirectamente.
+7. Validaciones realizadas
 
-8. Validaciones implementadas
+El notebook 02 valida:
 
-El notebook 02 ahora incluye validaciones básicas y de merges:
+- existencia de columnas requeridas del limpio mediante alias normalizados
+- consistencia y unicidad de CODIGO_SINIESTRO
+- filas antes y después de cada merge
+- duplicados generados por merge
+- cobertura por fuente
+- porcentaje de nulos nuevos
+- encoding de salidas en utf-8-sig
 
-- Verifica que no se pierdan filas.
-- Verifica que no se generen filas duplicadas.
-- Verifica que las columnas requeridas del limpio existan aunque cambien tildes, espacios o nombres equivalentes.\n- Verifica que CODIGO_SINIESTRO sea llave única.
-- Verifica la consistencia de llaves antes de cruzar personas y vehículos.
-- Verifica que la variable objetivo CATEGORIA_SEVERIDAD no cambie después de cada merge.
-- Calcula cobertura de cada fuente.
-- Calcula porcentaje de nulos de cada variable nueva.
-- Verifica que los archivos de salida se exporten con utf-8-sig.
+8. Salidas generadas
 
-9. Archivos generados por el notebook 02
-
-El notebook genera estos archivos finales:
+Archivos generados:
 
 - data/procesada/siniestros_enriquecido.csv
 - data/procesada/trazabilidad_variables_externas.csv
 
-Ambos se exportan con encoding utf-8-sig para evitar errores de tildes, ñ y caracteres especiales al abrirlos en Excel.
-
-10. Resultado final
-
-Base final:
-
-- data/procesada/siniestros_enriquecido.csv
-
-Dimensiones finales:
+Resultados finales:
 
 - 9,106 filas
-- 81 columnas
+- 73 columnas finales
+- 27 columnas provenientes del limpio del notebook 01
+- 46 variables nuevas de enriquecimiento
+- 0 duplicados en CODIGO_SINIESTRO
 
-Trazabilidad:
+9. Relación con el notebook 03
 
-- data/procesada/trazabilidad_variables_externas.csv
-- 46 variables documentadas
+El archivo data/procesada/siniestros_enriquecido.csv debe ser la entrada para el notebook 03.
 
-Distribución final de la variable objetivo:
+En el notebook 03 corresponde crear:
 
-- LEVE: 7,652
-- GRAVE_MORTALIDAD: 929
-- GRAVE_LESIONADOS: 525
+- variables temporales y derivadas
+- variable objetivo
+- selección de features
+- encoding
+- imputación para modelado
+- SMOTE
+- partición train/test
 
-La cantidad de filas se mantiene igual que la base original. No se perdieron registros y no se duplicaron siniestros.
+De esta forma, el pipeline queda separado correctamente:
 
-11. Archivos que deberían subirse a GitHub
-
-Cambios principales:
-
-- notebooks/02_enriquecimiento_externo.ipynb
-- data/procesada/siniestros_enriquecido.csv
-- data/procesada/trazabilidad_variables_externas.csv
-- docs/documentacion_enriquecimiento_onsv.txt
-
-Fuentes nuevas necesarias si todavía no están subidas:
-
-- data/raw/BBDD ONSV - PERSONAS 2021-2025 (preliminar) (1).xlsx
-- data/raw/BBDD ONSV - VEHICULOS 2021-2025 (preliminar) (1).xlsx
-
-12. Recomendación para continuar
-
-El siguiente paso es ejecutar el notebook 03 usando:
-
-- data/procesada/siniestros_enriquecido.csv
-
-Como ahora la base tiene nuevas variables de personas y vehículos, se recomienda revisar en el notebook 03 si se deben imputar o excluir algunas columnas antes del modelado. Especialmente revisar:
-
-- PER_EDAD_COND_PROM
-- PER_EDAD_COND_MIN
-- PER_EDAD_COND_MAX
-- Variables MTC_RVN_* con nulos por cobertura parcial.
-
+- NB01: limpieza estricta
+- NB02: enriquecimiento externo/relacional
+- NB03: preparación para modelado y feature engineering
