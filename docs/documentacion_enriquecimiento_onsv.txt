@@ -41,7 +41,7 @@ El notebook ahora incluye:
 - Lectura segura del CSV limpio con prioridad en utf-8-sig.
 - Corrección/verificación de encoding en outputs.
 - Reconstrucción de variables derivadas si el limpio nuevo no las trae.
-- Validación de CODIGO_SINIESTRO como llave única.
+- Validación robusta de columnas del dataset limpio mediante alias normalizados, y validación de CODIGO_SINIESTRO como llave única.
 - Enriquecimiento con fuentes MTC e IDH.
 - Enriquecimiento con personas y vehículos ONSV.
 - Validación de merges.
@@ -202,7 +202,7 @@ El notebook 02 ahora incluye validaciones básicas y de merges:
 
 - Verifica que no se pierdan filas.
 - Verifica que no se generen filas duplicadas.
-- Verifica que CODIGO_SINIESTRO sea llave única.
+- Verifica que las columnas requeridas del limpio existan aunque cambien tildes, espacios o nombres equivalentes.\n- Verifica que CODIGO_SINIESTRO sea llave única.
 - Verifica la consistencia de llaves antes de cruzar personas y vehículos.
 - Verifica que la variable objetivo CATEGORIA_SEVERIDAD no cambie después de cada merge.
 - Calcula cobertura de cada fuente.
@@ -268,3 +268,4 @@ Como ahora la base tiene nuevas variables de personas y vehículos, se recomiend
 - PER_EDAD_COND_MIN
 - PER_EDAD_COND_MAX
 - Variables MTC_RVN_* con nulos por cobertura parcial.
+
