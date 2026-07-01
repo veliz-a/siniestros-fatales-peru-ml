@@ -1,2 +1,2 @@
 modelo_a,modelo_b,delta_f1_macro,delta_f1_macro_ci_low,delta_f1_macro_ci_high
-XGBoost,Random Forest,0.0014281399121260363,-0.03133822896877708,0.03441143146723781
+XGBoost,Random Forest,-0.00999776936200808,-0.04215093438528555,0.023672046364488403
