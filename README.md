@@ -1,7 +1,7 @@
 # Siniestros Fatales en el Perú: Modelado Predictivo y Análisis Espacial (2021–2025)
 
 Facultad de Ingeniería - Ingeniería de Sistemas de Información, Software y Ciencia de Datos
-Universidad San Ignacio de Loyola | Curso: Agentes Inteligentes | 2026-01
+Universidad San Ignacio de Loyola
 
 ---
 
