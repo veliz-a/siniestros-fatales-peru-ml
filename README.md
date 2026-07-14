@@ -15,12 +15,12 @@ Se usa el dataset público del Observatorio Nacional de Seguridad Vial (ONSV), e
 
 ## Equipo
 
-| Integrante | Código | Notebook |
-|---|---|---|
-| Bautista Arrilucea, Romina Zoraida Perla | 2310146 | NB02 Enriquecimiento |
-| Riva Ramos, Renato Sebastian | 2311263 | NB04 Modelado supervisado |
-| Buitrón Catalan, Freddy Armando | 2321382 | NB03 Preparación para modelado |
-| Veliz Garcia, Alejandra | 2311640 | NB01 EDA y Limpieza / NB05 DBSCAN / Coordinación |
+| Integrante | Notebook |
+|---|---|
+| Bautista Arrilucea, Romina Zoraida Perla | NB02 Enriquecimiento |
+| Riva Ramos, Renato Sebastian | NB04 Modelado supervisado |
+| Buitrón Catalan, Freddy Armando | NB03 Preparación para modelado |
+| Veliz Garcia, Alejandra | NB01 EDA y Limpieza / NB05 DBSCAN / Coordinación |
 
 ---
 
